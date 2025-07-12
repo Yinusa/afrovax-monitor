@@ -5,8 +5,7 @@ import './App.css';
 function App() {
   const [currentTemp, setCurrentTemp] = useState('--.-');
   const [temperatureHistory, setTemperatureHistory] = useState([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [lastDataUpdate, setLastDataUpdate] = useState(null);
+
   const [minTemp, setMinTemp] = useState('--.-');
   const [maxTemp, setMaxTemp] = useState('--.-');
 
@@ -24,7 +23,6 @@ const fetchCurrentTemperature = async () => {
 
     if (data) {
       setCurrentTemp(data.temperature);
-      setLastDataUpdate(new Date(data.recorded_at));
     }
   } catch (error) {
     console.error('Error fetching current temperature:', error);
@@ -95,7 +93,6 @@ const fetchCurrentTemperature = async () => {
           console.log('New temperature reading:', payload);
           // Update current temperature with new data
           setCurrentTemp(payload.new.temperature);
-          setLastDataUpdate(new Date(payload.new.recorded_at));
           // Refresh history
           fetchTemperatureHistory();
         }
@@ -108,15 +105,9 @@ const fetchCurrentTemperature = async () => {
       fetchTemperatureHistory();
     }, 5 * 60 * 1000);
 
-    // Update current time every second
-    const timeInterval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
     return () => {
       subscription.unsubscribe();
       clearInterval(refreshInterval);
-      clearInterval(timeInterval);
     };
   }, []);
 
@@ -129,22 +120,7 @@ const fetchCurrentTemperature = async () => {
         </div>
         <div className="header-right">
           <p className="last-updated-label">Last Updated</p>
-          <p className="last-updated-time">
-            {lastDataUpdate 
-              ? lastDataUpdate.toLocaleTimeString('en-US', { 
-                  hour: '2-digit', 
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false 
-                })
-              : currentTime.toLocaleTimeString('en-US', { 
-                  hour: '2-digit', 
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false 
-                })
-            }
-          </p>
+          <p className="last-updated-time">Now</p>
         </div>
       </div>
 
